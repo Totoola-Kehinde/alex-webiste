@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron bg-background">
+    <h1>ALex With Reviews</h1>
+    <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+    <p><a class="btn btn-primary btn-lg">Learn more</a></p>
+  </div>
+<table class="table table-bordered table-inverse table-responsive">
+    <thead class="thead-inverse">
+        <tr>
+            <th>HYIP</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for item in itemsToList %}
+            <tr>
+                <td scope="row">{{item['hyip']}}</td>
+                <td>{{item['status']}}</td>
+                <td>{{item['description']}}</td>
+                <td>{{item['date']}}</td>
+                <td><a href="{{url_for('edititem', id=item._id)}}" class="btn btn-primary btn-xs">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+</table>
+
+{% endblock content %}
