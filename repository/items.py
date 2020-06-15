@@ -28,7 +28,10 @@ class itemRepository(item):
             # the save() method updates the document if this has an _id property 
             # which appears in the collection, otherwise it saves the data
             # as a new document in the collection
-            return self.db.items.save(item.get_as_json())            
+            
+            print(item.get_as_json())
+            return self.db.items.update_one({ '_id': ObjectId(item._id) },{"$set": { "hyip": item.hyip, 'status': item.status, 'description': item.description}})
+            # return self.db.items.save(item.get_as_json())            
         else:
             raise Exception("Nothing to update, because item parameter is None")
 

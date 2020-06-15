@@ -5,7 +5,6 @@ from models.item import item
 from repository.items import itemRepository
 from bson.json_util import dumps
 import json
-from bson import objectid
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey123"
@@ -44,28 +43,36 @@ def login():
 def edititem(id):
     form = ItemForm()
     itemToEdits = repo.read(id)
+    
     itemToEdits = dumps(itemToEdits)
     print(itemToEdits)
     itemToEdit = json.loads(itemToEdits)[0]
+    itemid = itemToEdit['_id']
+    itemid = dumps(itemid)
+    itemid = json.loads(itemid)
+    itemmainid = itemid['$oid']
     hyip = itemToEdit['hyip']
     status = itemToEdit['status']
     description = itemToEdit['description']
-    id = itemToEdit['_id']
-    main_id = json.loads(dumps(id))
-    
-    print(main_id['$oid'])
+    print(itemToEdit)
+    print(itemmainid)
     if request.method == 'GET':
         form.hyip.data = hyip
         form.description.data = description
         if status is not None:
             form.status_select.default = status
             form.process()
-        return render_template('edit-item.html', form=form, hyip=hyip, description=description)
+        return render_template('edit-item.html', form=form, hyip=hyip, description=description,id=itemmainid)
+    hyipUpdate = ''
+    statusUpdate = ''
+    descriptionUpdate = ''
     if form.validate_on_submit:
-        hyipUpdate = form.hyip.data
+        
+        hyipUpdate = request.form['hyip']
         statusUpdate = form.status_select.data
-        descriptionUpdate = form.description.data
-        itemToEdit = item(objectId(main_id['$oid']), hyipUpdate, statusUpdate, descriptionUpdate)
+        descriptionUpdate = request.form['description']
+        form.process()
+        itemToEdit = item(itemmainid, hyipUpdate, statusUpdate, descriptionUpdate)
         repo.update(itemToEdit)
     return render_template('edit-item.html', form=form)
 
