@@ -7,6 +7,7 @@ class ItemForm(FlaskForm):
     hyip = StringField("Input HYIP Item", validators=[DataRequired(), Length(min=5, max=10)])
 
     status_select = RadioField("Status", choices=[('pending','Pending'),('paying','Paying'),('notpaying','Not Paying')], validate_choice=True)
+    status_select.default = 'pending'
 
     description = TextAreaField("Item Description", validators=[DataRequired()])
 

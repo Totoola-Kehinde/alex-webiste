@@ -5,6 +5,7 @@ from models.item import item
 from repository.items import itemRepository
 from bson.json_util import dumps
 import json
+from bson import objectid
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey123"
@@ -49,16 +50,22 @@ def edititem(id):
     hyip = itemToEdit['hyip']
     status = itemToEdit['status']
     description = itemToEdit['description']
+    id = itemToEdit['_id']
+    main_id = json.loads(dumps(id))
+    
+    print(main_id['$oid'])
     if request.method == 'GET':
         form.hyip.data = hyip
-        form.status_select.default = status
         form.description.data = description
-        return render_template('edit-item.html', form=form)
+        if status is not None:
+            form.status_select.default = status
+            form.process()
+        return render_template('edit-item.html', form=form, hyip=hyip, description=description)
     if form.validate_on_submit:
         hyipUpdate = form.hyip.data
-        statusUpdate = form.status_select
+        statusUpdate = form.status_select.data
         descriptionUpdate = form.description.data
-        itemToEdit = item(itemToEdit['_id'], hyipUpdate, statusUpdate, descriptionUpdate)
+        itemToEdit = item(objectId(main_id['$oid']), hyipUpdate, statusUpdate, descriptionUpdate)
         repo.update(itemToEdit)
     return render_template('edit-item.html', form=form)
 
